@@ -1,0 +1,118 @@
+﻿@model CarSharingApp.Application.Contracts.Authorization.AuthorizationRequest;
+
+<div class="mt-5 text-center">
+    <img class="mb-4 mt-5" src="~/Images/SignInPage/samSolutionsLogo.png" alt="" width="72" height="72">
+    <h2>Sign in</h2>
+</div>
+
+<div class="row mb-5">
+    <div class="d-flex justify-content-center align-content-center mt-3 text-center">
+        <form asp-controller="SignIn" asp-action="TrySignIn" class="row g-3 needs-validation justify-content-center" style="width: 600px;" novalidate>
+
+            <div class="col-7">
+                <input asp-for="EmailOrLogin" type="text" class="form-control" id="emailOrLoginErrorValidationCustom" onclick="SetInputAsRequireValidation(this)" maxlength="255" placeholder="Email / Login" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div id="emailOrLoginErrorValidation" class="invalid-feedback">
+                    Email or login required.
+                </div>
+            </div>
+
+            <div class="col-7">
+                <input asp-for="Password" type="password" class="form-control" id="passwordErrorValidationCustom" onclick="SetInputAsRequireValidation(this)" maxlength="255" placeholder="Password" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div id="passwordErrorValidation" class="invalid-feedback">
+                    Password required.
+                </div>
+            </div>
+
+            <div class="col-12 text-center mt-4">
+                <button id="submitFormBtn" class="btn btn-primary w-25 mb-4" type="submit">Login</button>
+                <button id="processFormBtn" class="btn btn-primary w-25 mb-4" hidden disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Processing...
+                </button>
+            </div>
+
+            <div id="serverErrors" class="visually-hidden">
+                <span id="emailOrLoginError" asp-validation-for="EmailOrLogin"></span>
+                <span id="passwordError" asp-validation-for="Password"></span>
+            </div>
+        </form>
+    </div>
+    <div class="mb-4">
+        <div class="text-center">
+            <a class="link-secondary nav-link" asp-controller="Registration" asp-action="Index">Don't have an account? Join us now</a>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/signInPage.js" asp-append-version="true"></script>
+
+<script>
+    function ChangeSubmitButtonContent(hasLoading) {
+        const submitFormButtonElement = document.getElementById("submitFormBtn");
+        const processFormButtonElement = document.getElementById("processFormBtn");
+        if (hasLoading) {
+            submitFormButtonElement.setAttribute("hidden", "");
+            processFormButtonElement.removeAttribute("hidden");
+        } else {
+            processFormButtonElement.setAttribute("hidden", "");
+            submitFormButtonElement.removeAttribute("hidden");
+        }
+    }
+
+    (() => {
+        'use strict'
+
+        const forms = document.querySelectorAll('.needs-validation')
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    ChangeSubmitButtonContent(false);
+                } else {
+                    ChangeSubmitButtonContent(true);
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        ChangeSubmitButtonContent(false);
+        const serverErrorSpans = document.getElementById('serverErrors').querySelectorAll("span");
+
+        Array.from(serverErrorSpans).forEach(errorSpan => {
+            if (errorSpan.textContent !== "") {
+                document.getElementById(errorSpan.id + "Validation").textContent = errorSpan.textContent;
+                document.getElementById(errorSpan.id + "ValidationCustom").setAttribute("class", "form-control is-invalid")
+            }
+        });
+    });
+
+    function SetInputAsRequireValidation(inputElement) {
+        inputElement.setAttribute("class", "form-control");
+    }
+
+    function CheckFormForInvalidFields() {
+        const forms = document.getElementById("submitForm").querySelectorAll('input');
+
+        Array.from(forms).forEach(form => {
+            if (form.getAttribute("class") !== null) {
+                if (form.getAttribute("class").includes("is-invalid")) {
+                    form.setAttribute("class", "form-control");
+                }
+            }
+        });
+    }
+</script>
+
+
